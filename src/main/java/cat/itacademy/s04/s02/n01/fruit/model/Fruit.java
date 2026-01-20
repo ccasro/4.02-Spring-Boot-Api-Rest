@@ -1,0 +1,31 @@
+package cat.itacademy.s04.s02.n01.fruit.model;
+
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "fruits")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Fruit {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private int weightInKilos;
+
+    public Fruit(String name, int weightInKilos) {
+        this.name = name;
+        this.weightInKilos = weightInKilos;
+    }
+
+}
