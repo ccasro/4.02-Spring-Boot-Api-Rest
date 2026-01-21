@@ -1,6 +1,7 @@
 package cat.itacademy.s04.s02.n01.fruit.services;
 
 import cat.itacademy.s04.s02.n01.fruit.dto.FruitRequestDTO;
+import cat.itacademy.s04.s02.n01.fruit.exception.FruitNotFoundException;
 import cat.itacademy.s04.s02.n01.fruit.model.Fruit;
 import cat.itacademy.s04.s02.n01.fruit.repository.FruitRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,5 +16,10 @@ public class FruitService {
     public Fruit createFruit(FruitRequestDTO dto) {
         Fruit fruit = new Fruit(dto.name(), dto.weightInKilos());
         return repository.save(fruit);
+    }
+
+    public Fruit getFruitById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new FruitNotFoundException(id));
     }
 }
