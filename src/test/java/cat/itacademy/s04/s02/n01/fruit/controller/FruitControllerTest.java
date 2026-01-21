@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -106,7 +107,7 @@ public class FruitControllerTest {
     }
 
     @Test
-    void shouldReturn404WhenUpdatingNonExistingFruit() throws Exception {
+    void shouldReturn404WhenUpdatingNonExistentFruit() throws Exception {
         FruitRequestDTO update = new FruitRequestDTO("Kiwi", 1);
 
         mockMvc.perform(put("/fruits/900")
@@ -124,5 +125,21 @@ public class FruitControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(update)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldDeleteFruitWhenIdExists() throws Exception {
+        Fruit saved = repository.save(new Fruit("Apple", 3));
+
+        mockMvc.perform(delete("/fruits/" + saved.getId()))
+                .andExpect(status().isNoContent());
+
+        assertFalse(repository.findById(saved.getId()).isPresent());
+    }
+
+    @Test
+    void shouldReturn404WhenDeletingNonExistentFruit() throws Exception {
+        mockMvc.perform(delete("/fruits/999"))
+                .andExpect(status().isNotFound());
     }
 }

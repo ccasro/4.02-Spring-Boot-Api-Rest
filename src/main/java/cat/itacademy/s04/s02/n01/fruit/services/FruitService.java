@@ -38,4 +38,10 @@ public class FruitService {
 
         return repository.save(fruit);
     }
+
+    public void deleteFruit(Long id) {
+        Fruit fruit = repository.findById(id)
+                .orElseThrow(() -> new FruitNotFoundException(id));
+        repository.delete(fruit);
+    }
 }
