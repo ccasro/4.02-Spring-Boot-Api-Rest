@@ -28,4 +28,14 @@ public class FruitService {
     public List<Fruit> getAllFruits() {
         return repository.findAll();
     }
+
+    public Fruit updateFruit(Long id, FruitRequestDTO dto) {
+        Fruit fruit = repository.findById(id)
+                .orElseThrow(() -> new FruitNotFoundException(id));
+
+        fruit.setName(dto.name());
+        fruit.setWeightInKilos(dto.weightInKilos());
+
+        return repository.save(fruit);
+    }
 }
