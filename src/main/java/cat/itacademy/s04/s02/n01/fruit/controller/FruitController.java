@@ -42,4 +42,12 @@ public class FruitController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<FruitResponseDTO> updateFruit(@PathVariable Long id, @Valid @RequestBody FruitRequestDTO request) {
+        Fruit updated = service.updateFruit(id,request);
+        FruitResponseDTO response = new FruitResponseDTO(updated.getId(),updated.getName(), updated.getWeightInKilos());
+
+        return ResponseEntity.ok(response);
+    }
 }

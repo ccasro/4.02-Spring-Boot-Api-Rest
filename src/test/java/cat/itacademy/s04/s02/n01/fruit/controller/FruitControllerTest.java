@@ -14,8 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -91,5 +90,39 @@ public class FruitControllerTest {
         mockMvc.perform(get("/fruits"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]"));
+    }
+
+    @Test
+    void shouldUpdateFruitWhenDataIsValid() throws Exception {
+        Fruit saved = repository.save(new Fruit("Apple", 3));
+        FruitRequestDTO update = new FruitRequestDTO("Green Apple", 4);
+
+        mockMvc.perform(put("/fruits/" + saved.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(update)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Green Apple"))
+                .andExpect(jsonPath("$.weightInKilos").value(4));
+    }
+
+    @Test
+    void shouldReturn404WhenUpdatingNonExistingFruit() throws Exception {
+        FruitRequestDTO update = new FruitRequestDTO("Kiwi", 1);
+
+        mockMvc.perform(put("/fruits/900")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(update)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturn400WhenUpdatingWithInvalidData() throws Exception {
+        Fruit saved = repository.save(new Fruit("Apple", 3));
+        FruitRequestDTO update = new FruitRequestDTO("", -1);
+
+        mockMvc.perform(put("/fruits/" + saved.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(update)))
+                .andExpect(status().isBadRequest());
     }
 }
