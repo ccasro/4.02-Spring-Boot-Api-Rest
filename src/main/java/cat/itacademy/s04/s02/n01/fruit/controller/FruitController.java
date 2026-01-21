@@ -27,6 +27,8 @@ public class FruitController {
 
     @GetMapping("/{id}")
     public ResponseEntity<FruitResponseDTO> getFruitById(@PathVariable Long id) {
-        return ResponseEntity.notFound().build();
+        Fruit fruit = service.getFruitById(id);
+        FruitResponseDTO response = new FruitResponseDTO(fruit.getId(), fruit.getName(), fruit.getWeightInKilos());
+        return ResponseEntity.ok(response);
     }
 }
