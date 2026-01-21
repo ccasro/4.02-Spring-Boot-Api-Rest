@@ -73,4 +73,33 @@ public class FruitServiceTest {
         assertEquals(2,result.size());
         verify(repository).findAll();
     }
+
+    @Test
+    void shouldUpdateFruitWhenIdExists() {
+        Fruit existingFruit = new Fruit("Apple", 4);
+        FruitRequestDTO dto = new FruitRequestDTO("Green Apple", 5);
+        when(repository.findById(1L)).thenReturn(Optional.of(existingFruit));
+        when(repository.save(any(Fruit.class))).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+
+        Fruit updated = service.updateFruit(1L, dto);
+
+        assertEquals("Green Apple", updated.getName());
+        assertEquals(5,updated.getWeightInKilos());
+
+        verify(repository).findById(1L);
+        verify(repository).save(any());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingNonExistingFruit() {
+        FruitRequestDTO dto = new FruitRequestDTO("Kiwi", 2);
+
+        when(repository.findById(99L)).thenReturn(Optional.empty());
+
+        FruitNotFoundException ex = assertThrows(FruitNotFoundException.class, () -> service.updateFruit(99L, dto));
+
+        assertEquals("Fruit not found with id: 99", ex.getMessage());
+        verify(repository).findById(99L);
+        verify(repository, never()).save(any());
+    }
 }
