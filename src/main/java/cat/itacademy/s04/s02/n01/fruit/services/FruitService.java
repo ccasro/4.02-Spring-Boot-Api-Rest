@@ -7,6 +7,8 @@ import cat.itacademy.s04.s02.n01.fruit.repository.FruitRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class FruitService {
@@ -21,5 +23,9 @@ public class FruitService {
     public Fruit getFruitById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new FruitNotFoundException(id));
+    }
+
+    public List<Fruit> getAllFruits() {
+        return repository.findAll();
     }
 }
