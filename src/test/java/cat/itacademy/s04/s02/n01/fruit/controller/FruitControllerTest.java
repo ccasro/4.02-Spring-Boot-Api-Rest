@@ -5,6 +5,7 @@ import cat.itacademy.s04.s02.n01.fruit.dto.FruitRequestDTO;
 import cat.itacademy.s04.s02.n01.fruit.model.Fruit;
 import cat.itacademy.s04.s02.n01.fruit.repository.FruitRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -12,13 +13,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class FruitControllerTest {
 
     @Autowired
@@ -65,5 +67,29 @@ public class FruitControllerTest {
     void shouldReturn404WhenFruitDoesNotExist() throws Exception {
         mockMvc.perform(get("/fruits/222"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturnAllFruits() throws Exception {
+        repository.save(new Fruit("Banana", 3));
+        repository.save(new Fruit("Lemon", 4));
+
+        mockMvc.perform(get("/fruits")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").isNumber())
+                .andExpect(jsonPath("$[0].name").value("Banana"))
+                .andExpect(jsonPath("$[0].weightInKilos").value(3))
+                .andExpect(jsonPath("$[1].id").isNumber())
+                .andExpect(jsonPath("$[1].name").value("Lemon"))
+                .andExpect(jsonPath("$[1].weightInKilos").value(4));
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenNoFruitsExist() throws Exception {
+
+        mockMvc.perform(get("/fruits"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
     }
 }

@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/fruits")
 @RequiredArgsConstructor
@@ -29,6 +31,15 @@ public class FruitController {
     public ResponseEntity<FruitResponseDTO> getFruitById(@PathVariable Long id) {
         Fruit fruit = service.getFruitById(id);
         FruitResponseDTO response = new FruitResponseDTO(fruit.getId(), fruit.getName(), fruit.getWeightInKilos());
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<FruitResponseDTO>> getAllFruits() {
+        List<Fruit> fruits = service.getAllFruits();
+
+        List<FruitResponseDTO> response = fruits.stream().map(fruit -> new FruitResponseDTO(fruit.getId(), fruit.getName(), fruit.getWeightInKilos())).toList();
+
         return ResponseEntity.ok(response);
     }
 }
