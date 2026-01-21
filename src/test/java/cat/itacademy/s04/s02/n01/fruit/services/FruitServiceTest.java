@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,5 +60,17 @@ public class FruitServiceTest {
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(FruitNotFoundException.class, () -> service.getFruitById(1L));
+    }
+
+    @Test
+    void shouldReturnAllFruitsFromRepository() {
+        List<Fruit> fruits = List.of( new Fruit(1L, "Apple", 3), new Fruit(2L, "Orange", 4));
+
+        when(repository.findAll()).thenReturn(fruits);
+
+        List<Fruit> result = service.getAllFruits();
+
+        assertEquals(2,result.size());
+        verify(repository).findAll();
     }
 }
