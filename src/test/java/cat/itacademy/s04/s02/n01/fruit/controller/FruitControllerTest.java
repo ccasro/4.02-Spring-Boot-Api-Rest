@@ -97,7 +97,7 @@ public class FruitControllerTest {
         Fruit saved = repository.save(new Fruit("Apple", 3));
         FruitRequestDTO update = new FruitRequestDTO("Green Apple", 4);
 
-        mockMvc.perform(put("/fruits" + saved.getId())
+        mockMvc.perform(put("/fruits/" + saved.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(update)))
                 .andExpect(status().isOk())
